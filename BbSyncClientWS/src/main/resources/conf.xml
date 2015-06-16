@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+ - Copyright 2014 Kurt Faulknerloser
+ -
+ - Licensed under the Apache License, Version 2.0 (the "License");
+ - you may not use this file except in compliance with the License.
+ - You may obtain a copy of the License at
+ -
+ - http://www.apache.org/licenses/LICENSE-2.0
+ -
+ - Unless required by applicable law or agreed to in writing, software
+ - distributed under the License is distributed on an "AS IS" BASIS,
+ - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ - See the License for the specific language governing permissions and
+ - limitations under the License.
+ -->
+ 
+<conf>
+   <ClassConfig name="GLOBAL">
+      <!-- #################################################################### -->
+      <!-- admin_user & admin_pw are only used for certain integration tests.   -->
+      <!-- Otherwise, these parameters should be omitted in production systems. -->
+      <param name="admin_user" value="administrator"/>
+      <param name="admin_pw" value="password"/>
+      <!-- #################################################################### -->
+      <param name="blackboardServerURL" value="http://127.0.0.1:9876"/>
+      <param name="clientVendorId" value="bbsync.org"/>
+	  <param name="modulePath" value="/path/to/apache/rampart/directory"/>
+      <param name="toolRegistrationPassword" value="bbsyncregpass"/>
+      <param name="sessionTimeOutSeconds" value="30"/>
+   </ClassConfig>
+   <ClassConfig name="ContextProxyTool">
+   	  <param name="serverVersion" value="2"/>
+   	  <param name="webServiceURL" value="http://127.0.0.1:9876/webapps/ws/services/Context.WS"/>
+      <param name="sharedSecret" value="sharedsecret"/>
+      <param name="toolDescription" value="Blackboard Web Service Proxy tool that will add/update/delete context data."/>
+      <param name="toolMethods" value="Context.WS:deactivateTool,
+									   Context.WS:emulateUser,
+									   Context.WS:extendSessionLife,
+									   Context.WS:getMemberships,
+									   Context.WS:getMyMemberships,
+									   Context.WS:getRequiredEntitlements,
+									   Context.WS:getServerVersion,
+									   Context.WS:getSystemInstallationId,
+									   Context.WS:initialize,
+									   Context.WS:initializeVersion2,
+									   Context.WS:login,
+									   Context.WS:loginTicket,
+									   Context.WS:loginTool,
+									   Context.WS:logout,
+									   Context.WS:registerTool" />
+   </ClassConfig>
+   <ClassConfig name="UtilProxyTool">
+   	  <param name="webServiceURL" value="http://127.0.0.1:9876/webapps/ws/services/Util.WS"/>
+      <param name="sharedSecret" value="sharedsecret"/>
+      <param name="toolDescription" value="Blackboard Web Service Proxy tool that will add/update/delete util data."/>
+      <param name="toolMethods" value="Util.WS:checkEntitlement,
+									   Util.WS:deleteSetting,
+									   Util.WS:getDataSources,
+									   Util.WS:getRequiredEntitlements,
+									   Util.WS:getServerVersion,
+									   Util.WS:initializeUtilWS,
+									   Util.WS:loadSetting,
+									   Util.WS:saveSetting" />
+   </ClassConfig>
+   <ClassConfig name="CourseProxyTool">
+      <param name="webServiceURL" value="http://127.0.0.1:9876/webapps/ws/services/Course.WS"/>
+      <param name="sharedSecret" value="sharedsecret"/>
+      <param name="toolDescription" value="Blackboard Web Service Proxy tool that will add/update/delete course data."/>
+      <param name="toolMethods" value="Course.WS:addCourseToTerm,
+									   Course.WS:changeCourseBatchUid,
+									   Course.WS:changeCourseCategoryBatchUid,
+									   Course.WS:changeCourseDataSourceId,
+									   Course.WS:changeOrgBatchUid,
+									   Course.WS:changeOrgCategoryBatchUid,
+									   Course.WS:changeOrgDataSourceId,
+									   Course.WS:createCourse,
+									   Course.WS:createOrg,
+									   Course.WS:deleteCartridge,
+									   Course.WS:deleteCourse,
+									   Course.WS:deleteCourseCategory,
+									   Course.WS:deleteCourseCategoryMembership,
+									   Course.WS:deleteGroup,
+									   Course.WS:deleteOrg,
+									   Course.WS:deleteOrgCategory,
+									   Course.WS:deleteOrgCategoryMembership,
+									   Course.WS:deleteStaffInfo,
+									   Course.WS:deleteTerm,
+									   Course.WS:getAvailableGroupTools,
+									   Course.WS:getCartridge,
+									   Course.WS:getCategories,
+									   Course.WS:getClassifications,
+									   Course.WS:getCourse,
+									   Course.WS:getCourseCategoryMembership,
+									   Course.WS:getGroup,
+									   Course.WS:getOrg,
+									   Course.WS:getOrgCategoryMembership,
+									   Course.WS:getServerVersion,
+									   Course.WS:getStaffInfo,
+									   Course.WS:initializeCourseWS,
+									   Course.WS:loadCoursesInTerm,
+									   Course.WS:loadTerm,
+									   Course.WS:loadTermByCourseId,
+									   Course.WS:loadTerms,
+									   Course.WS:loadTermsByName,
+									   Course.WS:removeCourseFromTerm,
+									   Course.WS:saveCartridge,
+									   Course.WS:saveCourse,
+									   Course.WS:saveCourseCategory,
+									   Course.WS:saveCourseCategoryMembership,
+									   Course.WS:saveGroup,
+									   Course.WS:saveOrgCategory,
+									   Course.WS:saveOrgCategoryMembership,
+									   Course.WS:saveStaffInfo,
+									   Course.WS:saveTerm,
+									   Course.WS:setCourseBannerImage,
+									   Course.WS:updateCourse,
+									   Course.WS:updateOrg" />
+   </ClassConfig> 
+   <ClassConfig name="UserProxyTool">
+   	  <param name="webServiceURL" value="http://127.0.0.1:9876/webapps/ws/services/User.WS"/>
+      <param name="sharedSecret" value="sharedsecret"/>
+      <param name="toolDescription" value="Blackboard Web Service Proxy tool that will add/update/delete user data."/>
+      <param name="toolMethods" value="User.WS:changeUserBatchUid,
+										User.WS:changeUserDataSourceId,
+										User.WS:deleteAddressBookEntry,
+										User.WS:deleteObserverAssociation,
+										User.WS:deleteUser,
+										User.WS:deleteUserByInstitutionRole,
+										User.WS:getAddressBookEntry,
+										User.WS:getInstitutionRoles,
+										User.WS:getObservee,
+										User.WS:getServerVersion,
+										User.WS:getSystemRoles,
+										User.WS:getUser,
+										User.WS:getUserInstitutionRoles,
+										User.WS:initializeUserWS,
+										User.WS:saveAddressBookEntry,
+										User.WS:saveObserverAssociation,
+										User.WS:saveUser"/>
+   </ClassConfig>
+   <ClassConfig name="CourseMembershipProxyTool">
+	  <param name="webServiceURL" value="http://127.0.0.1:9876/webapps/ws/services/CourseMembership.WS"/>
+      <param name="sharedSecret" value="sharedsecret"/>
+      <param name="toolDescription" value="Blackboard Web Service Proxy tool that will add/update/delete course memebrship data."/>
+      <param name="toolMethods" value="CourseMembership.WS:initializeCourseMembershipWS,
+      								   CourseMembership.WS:getServerVersion,
+									   CourseMembership.WS:getCourseRoles,
+									   CourseMembership.WS:getCourseMembership,
+									   CourseMembership.WS:deleteCourseMembership,
+									   CourseMembership.WS:saveCourseMembership,
+									   CourseMembership.WS:getGroupMembership,
+									   CourseMembership.WS:saveGroupMembership,
+									   CourseMembership.WS:deleteGroupMembership" />
+   </ClassConfig> 
+</conf>

@@ -1,0 +1,266 @@
+/* 
+ * Copyright 2014 Kurt Faulknerloser
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.bbsync.webservice.client.user;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bbsync.webservice.client.generated.UserWSStub.ObserverAssociationVO;
+import org.bbsync.webservice.client.proxytool.UserProxyTool;
+
+/**
+ * BbObserverAssociation represents the relationship between observer user and
+ * the observees (users observed by the observer) in the Academic Suite. 
+ * 
+ * An observer is a special type of user account that has view-only access to 
+ * content. Parents can use observer accounts to view their children's course 
+ * materials and to monitor their children's activities within courses. 
+ * Academic advisors can use observer accounts to follow students on Blackboard
+ * Learn.
+ * 
+ * An observer can be assigned to one or more active users, and an active user 
+ * can have one or more observers. An instructor can limit the content that 
+ * observers can see for a particular course.
+ * 
+ * Observers cannot enroll in courses as students if they are observing another
+ * user in that course. If an observer wants to enroll in another course as a 
+ * student, a new user account needs to be created for the student role.
+ * 
+ * Note: To create an observer, Set a user's Primary System Role to Observer. 
+ * If using community engagement, also set the user's Primary Institution Role 
+ * to Observer.  
+ */
+public class BbObserverAssociation extends UserProxyTool {
+	private static final long serialVersionUID = 4444000000007777L;
+	private ObserverAssociationVO observer_assn = null;
+		
+    ///////////////////////////////////////////////////////////////////////////
+    //  Constructors  /////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+	public BbObserverAssociation() {
+        observer_assn = new ObserverAssociationVO();
+    }
+	
+	public BbObserverAssociation(ObserverAssociationVO observer_assn_vo) {
+		observer_assn = observer_assn_vo;
+    }
+	
+    ///////////////////////////////////////////////////////////////////////////
+    //  Required ClientWebService Methods  ////////////////////////////////////	
+	///////////////////////////////////////////////////////////////////////////	
+	/**
+	 * Add this observer to observee (user) association to the Academic Suite.
+	 * To use this method, you must set IDs for both observer & observee.  
+	 * Multiple observee users may be set.
+	 * 
+	 * @return If successful, returns the ID assigned to this observer
+	 *         association by the Academic Suite.  Otherwise returns null.
+	 */
+	public Serializable persist() {
+		String[] result = super.saveObserverAssociation(new ObserverAssociationVO[]{observer_assn});
+		if(result!=null && result[0]!=null) return result[0];
+		return null;
+	}
+	
+	/**
+	 * Load observer associations for a specified user.  An observer ID must be 
+	 * set in order to use this method.
+	 * 
+	 * @return Returns an array of BbObserverAssociations representing all of the 
+	 *         observees associated with the specified observer.
+	 */
+	public Object retrieve() {
+		ObserverAssociationVO[] result = super.getObservee(new String[]{observer_assn.getObserverId()});
+		return convert_ObsAssnVOArray_to_BbObsAssnArray(result);
+	}
+	
+	/**
+	 * Remove a single observer to observee association.
+	 * 
+	 * @return Returns true if the observer was successfully disassociated 
+	 *         with the corresponding observee; else returns false.
+	 */
+	public boolean delete() {
+		 String[] result = super.deleteObserverAssociation(new ObserverAssociationVO[]{observer_assn});
+		 if(result !=null && result[0]!=null) return true;
+		 return false;
+	}
+	
+    ///////////////////////////////////////////////////////////////////////////
+    //  Implemented ProxyTool Methods  ////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+	public long getServerVersion(){
+		return super.getServerVersion(null).getVersion();
+	}
+	
+	public boolean initializeUserWS(){
+		return super.initializeUserWS(true);
+	}
+	
+	/**
+	 * Load all of the observee associations for the given observer ids.
+	 *  
+	 * @param observer_ids - the IDs of the observer users.  These IDs should 
+	 *                       be generated by Blackboard, in the form "_nnn_1" 
+	 *                       where nnn is an integer.
+	 * 
+	 * @return Returns a BbObserverAssociation array representing all of the
+	 *         observees being observed by the specified users.
+	 */
+	public BbObserverAssociation[] getObserveeAssociations(String[] observer_ids){
+		ObserverAssociationVO[] result = super.getObservee(observer_ids);
+		return convert_ObsAssnVOArray_to_BbObsAssnArray(result);
+	}
+	
+	/**
+	 * Saves observer to observee(user) associations.  Note that observer IDs
+	 * should be unique.  That is, a single observer can be associated with 
+	 * multiple observees.  Therefore, if you create multiple observer 
+	 * associations using the same observer user, the last observer association
+	 * saved will overwrite any previous observer association that was saved 
+	 * with the same observer user. 
+	 * 
+	 * @param associations - an array of BbObserverAssociation objects 
+	 *                       representing the observer associations to be 
+	 *                       created. 
+	 *                       
+	 * @return  Returns an array of observer IDs that were successfully 
+	 *          associated with corresponding observee IDs.  A null array 
+	 *          indicates no operation.  A null array value indicates that the
+	 *          observer user was not associated with observees due to invalid 
+	 *          observer user ID.
+	 */
+	public String[] saveObserverAssociations(BbObserverAssociation[] associations){
+		ObserverAssociationVO[] obs_assn_vos = convert_bbObsAssnArray_to_obsAssnVOArray(associations);
+		if(obs_assn_vos!=null && obs_assn_vos.length>0){
+			return super.saveObserverAssociation(obs_assn_vos);
+		}
+		return null; 
+	}
+	
+	/**
+	 * Removes observer to observee associations
+	 * 
+	 * @param associations - an array of BbObserverAssociations objects 
+	 *                       representing the observer associations to be 
+	 *                       removed.
+	 * @return  Returns an array of observer IDs that were successfully 
+	 *          disassociated with corresponding observee ids.  A null array 
+	 *          indicates no operation.  A null array value indicates that the 
+	 *          observer disassociation failed.
+	 */
+	public String[] deleteObserverAssociations(BbObserverAssociation[] associations){
+		ObserverAssociationVO[] obs_assn_vos = convert_bbObsAssnArray_to_obsAssnVOArray(associations);
+		if(obs_assn_vos!=null && obs_assn_vos.length>0){
+			return super.deleteObserverAssociation(obs_assn_vos);
+		}
+		return null; 
+	}
+	
+	///////////////////////////////////////////////////////////////////////////
+    //  Local Methods  ////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////	
+	/**
+	 * @return Returns the expansion data.
+	 */
+	public String[]	getExpansionData(){
+		return observer_assn.getExpansionData();
+	}
+	
+	/**
+	 * @return Returns the observee id.
+	 */
+	public String[]	getObserveeId(){
+		return observer_assn.getObserveeId();
+	}
+	
+	/**
+	 * There is no documentation for this method nor is there a setter method.
+	 * Testing has shown that the return for this value is always null.
+	 * 
+	 * @return Always returns null.
+	 */
+	public String[]	getObserveeIdByName(){
+		return observer_assn.getObserveeIdByName();
+	}
+	
+	/**
+	 * @return
+	 */
+	public String getObserverId(){
+		return observer_assn.getObserverId();
+	}
+	
+    /**
+     * Expansion data is currently ignored. In future versions it may be used 
+     * to add additional attributes without breaking the wsdl contract.
+     * 
+     * @param expansion_data - the expansionData to set (For Future Use)
+     */
+	public void	setExpansionData(String[] expansion_data){
+		observer_assn.setExpansionData(expansion_data);
+	}
+	
+	/**
+	 * Associate [mulitple] observee users with a single observer user.  You 
+	 * should not try to 'make up' an id here - only use the IDs that you are 
+	 * given from another API call.
+     * 
+     * @param observee_ids - the IDs to set. These IDs should be generated by 
+     *                       Blackboard, in the form "_nnn_1" where nnn is an 
+     *                       integer.
+	 */
+	public void	setObserveeIds(String[] observee_ids){
+		observer_assn.setObserveeId(observee_ids);
+	}
+	
+	/**
+	 * Set the observer for this observer association. You should not try to 
+	 * 'make up' an id here - only use the IDs that you are given from another 
+	 * API call.
+     * 
+     * @param observer_id - the ID to set. This ID should be generated by 
+     *                      Blackboard, in the form "_nnn_1" where nnn is an 
+     *                      integer.
+	 */
+	public void	setObserverId(String observer_id){
+		observer_assn.setObserverId(observer_id);
+	}
+	
+	private ObserverAssociationVO getVO(){
+		return observer_assn;
+	}
+	
+	private ObserverAssociationVO[] convert_bbObsAssnArray_to_obsAssnVOArray(BbObserverAssociation[] bb_obs_assns){
+		if(bb_obs_assns==null || bb_obs_assns.length==0)return null;
+		List<ObserverAssociationVO> obs_assn_vos = new ArrayList<ObserverAssociationVO>();
+		for(BbObserverAssociation bb_obs_assn:bb_obs_assns){
+			obs_assn_vos.add(bb_obs_assn.getVO());
+		}
+		return obs_assn_vos.toArray(new ObserverAssociationVO[]{});
+	}
+	
+	private BbObserverAssociation[] convert_ObsAssnVOArray_to_BbObsAssnArray(ObserverAssociationVO[] obs_assn_vos){
+    	if(obs_assn_vos==null || obs_assn_vos.length<1) return null;
+		List<BbObserverAssociation> bb_obs_assns = new ArrayList<BbObserverAssociation>();
+		for(ObserverAssociationVO obs_assn : obs_assn_vos){
+			if(obs_assn!=null) bb_obs_assns.add(new BbObserverAssociation(obs_assn));
+		}
+		return bb_obs_assns.toArray(new BbObserverAssociation[]{});
+    } 
+}
